@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday — A Cinematic Memory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Dancing+Script:wght@400;600;700&family=Caveat:wght@400;600&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/TextPlugin.min.js"></script>
+<style>
+/* ─── ROOT VARIABLES ─── */
+:root {
+  --dark-brown: #1a0f0a;
+  --deep-brown: #2d1810;
+  --burgundy: #6b1f2e;
+  --wine: #8b2635;
+  --rust: #a0392b;
+  --cream: #f0e6d3;
+  --cream-dark: #d4c4a8;
+  --parchment: #e8d5b7;
+  --denim: #2c3e5c;
+  --denim-light: #3d5278;
+  --silver: #c0b090;
+  --gold: #b8975a;
+  --gold-light: #d4af6e;
+  --sepia: #8b6914;
+  --ink: #1c140e;
+}
+
+/* ─── RESET & BASE ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; overflow-x: hidden; }
+body {
+  font-family: 'Cormorant Garamond', serif;
+  background: var(--dark-brown);
+  color: var(--cream);
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ─── CUSTOM CURSOR ─── */
+#cursor {
+  position: fixed; width: 20px; height: 20px;
+  border: 1.5px solid var(--gold); border-radius: 50%;
+  pointer-events: none; z-index: 9999;
+  transition: transform 0.15s ease, opacity 0.3s;
+  transform: translate(-50%, -50%);
+  mix-blend-mode: screen;
+}
+#cursor-dot {
+  position: fixed; width: 5px; height: 5px;
+  background: var(--gold-light); border-radius: 50%;
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%, -50%);
+}
+#cursor-glow {
+  position: fixed; width: 120px; height: 120px;
+  background: radial-gradient(circle, rgba(184,151,90,0.08) 0%, transparent 70%);
+  border-radius: 50%; pointer-events: none; z-index: 9990;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.4s;
+}
+
+/* ─── GRAIN OVERLAY ─── */
+#grain {
+  position: fixed; inset: 0; z-index: 9980; pointer-events: none;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 200px 200px; animation: grain 0.4s steps(1) infinite;
+}
+@keyframes grain {
+  0%,100%{transform:translate(0,0)}
+  10%{transform:translate(-2%,-3%)}
+  20%{transform:translate(3%,2%)}
+  30%{transform:translate(-1%,4%)}
+  40%{transform:translate(4%,-1%)}
+  50%{transform:translate(-3%,1%)}
+  60%{transform:translate(2%,-4%)}
+  70%{transform:translate(-4%,3%)}
+  80%{transform:translate(1%,-2%)}
+  90%{transform:translate(-2%,4%)}
+}
+
+/* ─── LOADING SCREEN ─── */
+#loading {
+  position: fixed; inset: 0; z-index: 9970;
+  background: var(--ink);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 24px;
+}
+.loading-logo { font-family: 'Dancing Script', cursive; font-size: clamp(2rem,6vw,3.5rem); color: var(--gold); letter-spacing: 0.05em; }
+.loading-line { width: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); transition: width 2s ease; }
+.loading-line.active { width: 200px; }
+.loading-text { font-family: 'Caveat', cursive; font-size: 0.9rem; color: var(--silver); letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.6; }
+
+/* ─── MUSIC BUTTON ─── */
+#music-btn {
+  position: fixed; top: 20px; right: 20px; z-index: 9950;
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 1px solid rgba(184,151,90,0.5);
+  background: rgba(26,15,10,0.7); backdrop-filter: blur(10px);
+  cursor: none; display: flex; align-items: center; justify-content: center;
+  color: var(--gold); font-size: 16px;
+  transition: all 0.3s; opacity: 0;
+}
+#music-btn:hover { border-color: var(--gold); background: rgba(107,31,46,0.4); }
+#music-btn.muted .wave { opacity: 0.3; }
+.wave { display: flex; gap: 2px; align-items: center; }
+.wave span { display: block; width: 3px; border-radius: 2px; background: var(--gold-light); animation: wave 1s ease-in-out infinite; }
+.wave span:nth-child(1){ height: 6px; animation-delay:0s; }
+.wave span:nth-child(2){ height: 12px; animation-delay:0.2s; }
+.wave span:nth-child(3){ height: 8px; animation-delay:0.4s; }
+.wave span:nth-child(4){ height: 10px; animation-delay:0.1s; }
+@keyframes wave { 0%,100%{transform:scaleY(0.5)} 50%{transform:scaleY(1)} }
+
+/* ─── SECTION BASE ─── */
+section { position: relative; overflow: hidden; }
+
+/* ─── SECTION 1: HERO ─── */
+#hero {
+  min-height: 100svh; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; text-align: center;
+  padding: 2rem; position: relative;
+  background: radial-gradient(ellipse at 50% 30%, #2d1810 0%, #1a0f0a 50%, #0d0806 100%);
+}
+.hero-vignette {
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.7) 100%);
+}
+.hero-light-leak {
+  position: absolute; top: -10%; left: -10%; width: 60%; height: 60%;
+  background: radial-gradient(ellipse, rgba(107,31,46,0.12) 0%, transparent 70%);
+  pointer-events: none; animation: lightleak 8s ease-in-out infinite alternate;
+}
+@keyframes lightleak { 0%{opacity:0.5;transform:scale(1) rotate(0deg)} 100%{opacity:1;transform:scale(1.2) rotate(15deg)} }
+.hero-light-leak2 {
+  position: absolute; bottom: -10%; right: -10%; width: 50%; height: 50%;
+  background: radial-gradient(ellipse, rgba(44,62,92,0.15) 0%, transparent 70%);
+  pointer-events: none; animation: lightleak2 10s ease-in-out infinite alternate;
+}
+@keyframes lightleak2 { 0%{opacity:0.3;transform:scale(1)} 100%{opacity:0.8;transform:scale(1.3)} }
+
+/* floating birds */
+.birds-container { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.bird {
+  position: absolute; width: 28px; opacity: 0;
+  filter: drop-shadow(0 0 4px rgba(184,151,90,0.3));
+}
+.bird svg path { fill: none; stroke: var(--gold); stroke-width: 1.5; stroke-linecap: round; }
+
+/* floating petals */
+.petals-container { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.petal {
+  position: absolute; opacity: 0; font-size: 16px;
+  animation: petalfall linear infinite;
+  filter: sepia(1) hue-rotate(330deg);
+}
+@keyframes petalfall {
+  0%{transform:translateY(-20px) rotate(0deg); opacity:0}
+  10%{opacity:0.6}
+  90%{opacity:0.4}
+  100%{transform:translateY(100vh) rotate(720deg); opacity:0}
+}
+
+/* sparkles */
+.sparkles-container { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.sparkle { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: var(--gold-light); animation: sparkleAnim ease-in-out infinite; }
+@keyframes sparkleAnim { 0%,100%{opacity:0;transform:scale(0)} 50%{opacity:1;transform:scale(1)} }
+
+.hero-eyebrow {
+  font-family: 'Caveat', cursive; font-size: clamp(0.8rem,2.5vw,1rem);
+  letter-spacing: 0.4em; text-transform: uppercase; color: var(--silver);
+  margin-bottom: 1.2rem; visibility: visible;
+}
+.hero-title {
+  font-family: 'Dancing Script', cursive;
+  font-size: clamp(3.5rem, 13vw, 9rem);
+  font-weight: 700; line-height: 0.9;
+  background: linear-gradient(135deg, var(--gold-light) 0%, var(--cream) 40%, var(--gold) 70%, var(--silver) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  letter-spacing: -0.01em;
+  filter: drop-shadow(0 0 40px rgba(184,151,90,0.3));
+}
+.hero-divider {
+  display: flex; align-items: center; gap: 16px; margin: 1.5rem 0;
+}
+.hero-divider-line { flex: 1; max-width: 80px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold)); }
+.hero-divider-line.right { background: linear-gradient(90deg, var(--gold), transparent); }
+.hero-divider-ornament { color: var(--gold); font-size: 1rem; }
+.hero-subtitle {
+  font-family: 'Cormorant Garamond', serif; font-style: italic;
+  font-size: clamp(0.85rem, 2.5vw, 1.15rem);
+  color: var(--cream-dark); max-width: 460px; line-height: 1.8;
+}
+.hero-cta {
+  margin-top: 2.8rem;
+  font-family: 'Caveat', cursive; font-size: 1.1rem;
+  letter-spacing: 0.25em; text-transform: uppercase;
+  color: var(--cream); background: none;
+  border: 1px solid rgba(184,151,90,0.6);
+  padding: 14px 36px; cursor: none;
+  transition: all 0.4s; position: relative; overflow: hidden;
+}
+.hero-cta::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(107,31,46,0.4), rgba(184,151,90,0.15));
+  opacity: 0; transition: opacity 0.4s;
+}
+.hero-cta:hover { border-color: var(--gold); color: var(--gold-light); }
+.hero-cta:hover::before { opacity: 1; }
+.hero-date {
+  position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+  font-family: 'Caveat', cursive; font-size: 0.85rem; color: rgba(192,176,144,0.5);
+  letter-spacing: 0.2em;
+}
+
+/* ─── SECTION 2: SCRAPBOOK ─── */
+#scrapbook {
+  min-height: 100svh; padding: 80px 20px;
+  background: linear-gradient(180deg, #1a0f0a 0%, #1e1610 30%, #0f1a2a 70%, #0a1520 100%);
+  display: flex; flex-direction: column; align-items: center;
+}
+.section-header {
+  text-align: center; margin-bottom: 3rem;
+  opacity: 0;
+}
+.section-eyebrow {
+  font-family: 'Caveat', cursive; font-size: 0.85rem;
+  letter-spacing: 0.4em; text-transform: uppercase; color: var(--silver); opacity: 0.7;
+}
+.section-title {
+  font-family: 'Dancing Script', cursive;
+  font-size: clamp(2.2rem, 7vw, 4rem); color: var(--gold);
+  line-height: 1.1; margin-top: 0.5rem;
+}
+.section-ornament { color: var(--wine); margin: 0.5rem 0; font-size: 1.2rem; }
+
+.scrapbook-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2.5rem; max-width: 1100px; width: 100%;
+  padding: 20px;
+}
+
+/* Polaroid */
+.photo-polaroid {
+  background: var(--cream); padding: 12px 12px 40px;
+  box-shadow: 4px 8px 30px rgba(0,0,0,0.6), 0 0 0 1px rgba(184,151,90,0.2);
+  transform: rotate(-3deg); position: relative; cursor: none;
+  transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.4s;
+  opacity: 0;
+}
+.photo-polaroid:hover { transform: rotate(-1deg) scale(1.04); box-shadow: 8px 16px 50px rgba(0,0,0,0.7), 0 0 20px rgba(184,151,90,0.2); }
+.photo-polaroid .photo-inner { width: 100%; aspect-ratio: 1; overflow: hidden; background: linear-gradient(135deg, #2d1810, #3d2820, #1a2535); position: relative; }
+.photo-caption { text-align: center; margin-top: 8px; font-family: 'Caveat', cursive; font-size: 1rem; color: var(--ink); }
+.photo-tape {
+  position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+  width: 70px; height: 24px;
+  background: rgba(240,230,211,0.55); border: 1px solid rgba(184,151,90,0.2);
+}
+
+/* Oval frame */
+.photo-oval {
+  position: relative; display: flex; flex-direction: column; align-items: center;
+  transform: rotate(2.5deg); cursor: none; opacity: 0;
+  transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+.photo-oval:hover { transform: rotate(0.5deg) scale(1.05); }
+.oval-frame {
+  width: 220px; height: 270px; border-radius: 50%;
+  border: 8px solid var(--gold); overflow: hidden; position: relative;
+  background: linear-gradient(135deg, #1a2535, #2d3820);
+  box-shadow: 0 0 0 3px rgba(184,151,90,0.3), 0 0 0 12px rgba(184,151,90,0.08),
+              inset 0 0 20px rgba(0,0,0,0.5), 4px 8px 30px rgba(0,0,0,0.6);
+}
+.oval-frame::before {
+  content: ''; position: absolute; inset: -2px;
+  border-radius: 50%; background: linear-gradient(135deg, var(--gold-light), transparent, var(--gold));
+  z-index: 1; pointer-events: none; opacity: 0.3;
+}
+.wax-seal {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, var(--wine), #3d0f1a);
+  border: 2px solid rgba(184,151,90,0.4);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; color: var(--gold-light); margin-top: 14px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  font-family: 'IM Fell English', serif;
+}
+.charm {
+  position: absolute; top: -12px; left: 50%;
+  width: 18px; height: 18px; background: var(--gold);
+  border-radius: 50%; transform: translateX(-50%);
+  box-shadow: 0 0 8px rgba(184,151,90,0.4);
+}
+.charm::after { content: ''; position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 2px; height: 18px; background: linear-gradient(var(--gold), var(--gold-light)); }
+
+/* Clip photo */
+.photo-clip {
+  background: var(--parchment); padding: 14px; position: relative;
+  box-shadow: 3px 6px 20px rgba(0,0,0,0.5); transform: rotate(1.5deg);
+  border: 1px solid var(--cream-dark); cursor: none; opacity: 0;
+  transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.4s;
+}
+.photo-clip:hover { transform: rotate(0deg) scale(1.04); box-shadow: 6px 12px 35px rgba(0,0,0,0.6); }
+.paper-clip {
+  position: absolute; top: -20px; left: 28px;
+  width: 30px; height: 52px; border: 3px solid var(--silver);
+  border-radius: 20px 20px 0 0; border-bottom: none;
+  z-index: 2;
+}
+.paper-clip::after { content:''; position:absolute; top:6px; left:6px; right:6px; height:30px; border:3px solid var(--silver); border-radius:10px 10px 0 0; border-bottom:none; }
+.stitched-border {
+  position: absolute; inset: 8px;
+  border: 2px dashed rgba(139,105,20,0.4); pointer-events: none;
+}
+.photo-clip .photo-inner { width: 100%; aspect-ratio: 4/3; overflow: hidden; background: linear-gradient(135deg, #1a2010, #2d2820); position: relative; }
+.photo-clip .photo-inner img { width: 100%; height: 100%; object-fit: cover; display: block; position: absolute; inset: 0; }
+
+/* ─── Photo inner art ─── */
+.photo-art { width: 100%; height: 100%; position: relative; overflow: hidden; }
+.photo-art-1 {
+  background: linear-gradient(135deg, #1a0a14 0%, #2d1020 40%, #1a2535 80%, #0d1520 100%);
+}
+.photo-art-2 {
+  background: linear-gradient(135deg, #0f1a10 0%, #1a2d15 40%, #2a3515 80%, #1a2010 100%);
+}
+.photo-art-3 {
+  background: linear-gradient(135deg, #1a1520 0%, #2d1535 40%, #1a0a20 70%, #2d2010 100%);
+}
+.photo-bloom { position: absolute; border-radius: 50%; filter: blur(20px); animation: bloompulse 4s ease-in-out infinite alternate; }
+@keyframes bloompulse { 0%{opacity:0.3;transform:scale(0.9)} 100%{opacity:0.7;transform:scale(1.1)} }
+.photo-silhouette { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0.35; }
+
+/* ─── SECTION 3: LOVE NOTE ─── */
+#lovenote {
+  min-height: 100svh; padding: 80px 20px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  position: relative;
+}
+.denim-bg {
+  position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255,255,255,0.012) 2px, rgba(255,255,255,0.012) 3px),
+    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.008) 2px, rgba(255,255,255,0.008) 3px),
+    linear-gradient(180deg, #0f1a2a 0%, #162035 50%, #0f1a2a 100%);
+  pointer-events: none;
+}
+.denim-threads {
+  position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+  background: repeating-linear-gradient(135deg, transparent, transparent 18px, rgba(44,62,92,0.08) 18px, rgba(44,62,92,0.08) 19px);
+}
+.light-leak-note {
+  position: absolute; top: 0; left: 0; right: 0; height: 40%;
+  background: radial-gradient(ellipse at 30% 0%, rgba(107,31,46,0.15) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.note-wrapper {
+  position: relative; max-width: 560px; width: 100%;
+  animation: paperSway 6s ease-in-out infinite;
+  opacity: 0;
+}
+@keyframes paperSway { 0%,100%{transform:rotate(-0.5deg)} 50%{transform:rotate(0.5deg)} }
+
+.note-clip-top {
+  position: absolute; top: -24px; left: 50%; transform: translateX(-50%);
+  width: 60px; height: 60px; z-index: 10;
+}
+.note-clip-svg { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+
+.note-paper {
+  background: linear-gradient(160deg, #f5ecd8 0%, #ede0c4 40%, #e8d8b8 100%);
+  padding: 3rem 2.5rem 2.5rem;
+  position: relative;
+  box-shadow:
+    0 4px 6px rgba(0,0,0,0.07),
+    0 20px 60px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.6);
+}
+.rip-top {
+  position: absolute; top: -18px; left: 0; right: 0; height: 20px;
+  background: linear-gradient(160deg, #f5ecd8 0%, #ede0c4 40%, #e8d8b8 100%);
+  clip-path: polygon(0 100%, 2% 60%, 5% 80%, 8% 40%, 12% 70%, 15% 30%, 18% 60%, 22% 20%, 26% 55%, 30% 15%, 34% 50%, 38% 10%, 42% 45%, 46% 5%, 50% 40%, 54% 8%, 58% 42%, 62% 12%, 66% 48%, 70% 18%, 74% 52%, 78% 22%, 82% 58%, 86% 28%, 90% 62%, 93% 35%, 96% 70%, 100% 45%, 100% 100%);
+}
+.rip-bottom {
+  position: absolute; bottom: -18px; left: 0; right: 0; height: 20px;
+  background: linear-gradient(160deg, #f5ecd8 0%, #ede0c4 40%, #e8d8b8 100%);
+  clip-path: polygon(0 0, 3% 40%, 6% 20%, 10% 60%, 13% 30%, 17% 70%, 20% 40%, 24% 80%, 28% 50%, 32% 85%, 36% 55%, 40% 90%, 44% 60%, 48% 95%, 52% 62%, 56% 90%, 60% 58%, 64% 88%, 68% 52%, 72% 80%, 76% 48%, 80% 75%, 84% 42%, 88% 65%, 92% 38%, 96% 60%, 100% 30%, 100% 0);
+}
+.note-ruling {
+  position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(transparent, transparent 29px, rgba(139,105,20,0.12) 29px, rgba(139,105,20,0.12) 30px);
+  margin: 40px 0;
+}
+.note-margin-line {
+  position: absolute; left: 52px; top: 0; bottom: 0; width: 1px;
+  background: rgba(107,31,46,0.2); pointer-events: none;
+}
+.note-wax-seal {
+  position: absolute; bottom: 20px; right: 20px;
+  width: 38px; height: 38px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #8b2635, #3d0f1a);
+  border: 1.5px solid rgba(184,151,90,0.5);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; color: rgba(184,151,90,0.8);
+  font-family: 'Dancing Script', cursive;
+}
+
+.note-heading {
+  font-family: 'Dancing Script', cursive; font-size: clamp(1.5rem, 4.5vw, 2.2rem);
+  color: var(--ink); margin-bottom: 1rem; font-weight: 700;
+}
+.note-body {
+  font-family: 'IM Fell English', serif; font-size: clamp(0.85rem, 2.2vw, 0.95rem);
+  color: #3d2810; line-height: 1.9; min-height: 140px;
+}
+#typewriter-cursor { display: inline-block; width: 2px; height: 1em; background: #3d2810; margin-left: 1px; animation: blink 0.7s steps(1) infinite; vertical-align: text-bottom; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+.note-signature { font-family: 'Dancing Script', cursive; font-size: 1.3rem; color: var(--ink); margin-top: 1.2rem; text-align: right; opacity: 0.8; }
+
+/* ─── SECTION 4: VIDEO ─── */
+#memvideo {
+  min-height: 100svh; padding: 80px 20px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: linear-gradient(180deg, #0a1520 0%, #0d0a0a 50%, #1a0f0a 100%);
+  position: relative;
+}
+.tv-wrapper { position: relative; max-width: 700px; width: 100%; opacity: 0; }
+.tv-outer {
+  background: linear-gradient(135deg, #1a1210, #252018, #1a1210);
+  border-radius: 16px;
+  padding: 20px 20px 16px;
+  box-shadow:
+    0 0 0 2px rgba(192,176,144,0.2),
+    0 0 0 4px rgba(26,18,16,0.8),
+    0 0 60px rgba(107,31,46,0.25),
+    0 20px 80px rgba(0,0,0,0.8);
+  position: relative;
+}
+.tv-outer::before {
+  content: ''; position: absolute; inset: 0; border-radius: 16px;
+  background: linear-gradient(135deg, rgba(192,176,144,0.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+.tv-glow {
+  position: absolute; inset: -20px; border-radius: 24px;
+  background: radial-gradient(ellipse, rgba(107,31,46,0.2) 0%, transparent 70%);
+  pointer-events: none; animation: tvglow 3s ease-in-out infinite alternate;
+}
+@keyframes tvglow { 0%{opacity:0.5} 100%{opacity:1} }
+.tv-screen {
+  position: relative; width: 100%; aspect-ratio: 16/9;
+  background: #000; border-radius: 6px; overflow: hidden;
+  border: 2px solid rgba(192,176,144,0.15);
+}
+.vhs-video { width: 100%; height: 100%; object-fit: cover; display: none; }
+.vhs-placeholder {
+  width: 100%; height: 100%;
+  background: linear-gradient(135deg, #0a0505 0%, #100808 50%, #0a0a05 100%);
+  display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 12px;
+}
+.vhs-text { font-family: 'Caveat', cursive; color: rgba(184,151,90,0.4); font-size: 0.75rem; letter-spacing: 0.3em; text-transform: uppercase; }
+.vhs-logo { font-family: 'Caveat', cursive; font-size: 1.8rem; color: rgba(184,151,90,0.3); letter-spacing: 0.1em; }
+
+/* scanlines */
+.scanlines {
+  position: absolute; inset: 0; pointer-events: none; z-index: 5;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0px, rgba(0,0,0,0.15) 1px, transparent 1px, transparent 3px);
+  animation: scanshift 8s linear infinite;
+}
+@keyframes scanshift { 0%{transform:translateY(0)} 100%{transform:translateY(6px)} }
+
+/* VHS noise */
+.vhs-noise {
+  position: absolute; inset: 0; pointer-events: none; z-index: 4; opacity: 0.04;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: vhsnoise 0.08s steps(1) infinite;
+}
+@keyframes vhsnoise { 0%,100%{transform:translate(0,0)} 25%{transform:translate(1px,-1px)} 50%{transform:translate(-1px,1px)} 75%{transform:translate(1px,1px)} }
+
+/* Static line */
+.static-line {
+  position: absolute; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), rgba(255,255,255,0.15), rgba(255,255,255,0.08), transparent);
+  z-index: 6; animation: staticline 5s linear infinite;
+  pointer-events: none;
+}
+@keyframes staticline { 0%{top:-5px;opacity:0} 5%{opacity:0.8} 95%{opacity:0.6} 100%{top:100%;opacity:0} }
+
+/* play button */
+.play-btn-wrap { position: absolute; inset: 0; z-index: 10; display: flex; align-items: center; justify-content: center; cursor: none; }
+.play-btn {
+  width: 70px; height: 70px; border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, rgba(107,31,46,0.9), rgba(60,15,25,0.95));
+  border: 2px solid rgba(184,151,90,0.6);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 30px rgba(107,31,46,0.5), 0 0 60px rgba(107,31,46,0.2);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.play-btn:hover { transform: scale(1.1); box-shadow: 0 0 40px rgba(107,31,46,0.7), 0 0 80px rgba(107,31,46,0.3); }
+.play-btn svg { margin-left: 4px; }
+
+/* progress bar */
+.vhs-controls {
+  margin-top: 12px; padding: 0 4px;
+  display: flex; align-items: center; gap: 12px;
+}
+.vhs-progress { flex: 1; height: 3px; background: rgba(192,176,144,0.15); border-radius: 2px; cursor: none; position: relative; overflow: hidden; }
+.vhs-progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--wine), var(--gold)); border-radius: 2px; transition: width 0.3s; }
+.vhs-time { font-family: 'Caveat', cursive; font-size: 0.8rem; color: var(--silver); letter-spacing: 0.1em; min-width: 60px; }
+.vhs-label { font-family: 'Caveat', cursive; font-size: 0.7rem; color: rgba(192,176,144,0.4); letter-spacing: 0.3em; text-transform: uppercase; }
+.tv-brand { text-align: center; margin-top: 10px; font-family: 'Caveat', cursive; font-size: 0.75rem; color: rgba(192,176,144,0.3); letter-spacing: 0.3em; text-transform: uppercase; }
+
+.video-note { margin-top: 2rem; text-align: center; opacity: 0; }
+.video-note p { font-family: 'Caveat', cursive; color: var(--silver); font-size: 1rem; letter-spacing: 0.1em; opacity: 0.6; }
+
+/* ─── SECTION 5: FINAL ─── */
+#finale {
+  min-height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 60px 20px; position: relative;
+  background: radial-gradient(ellipse at 50% 50%, #1a0f0a 0%, #0d0806 60%, #050303 100%);
+}
+.bokeh-container { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.bokeh {
+  position: absolute; border-radius: 50%;
+  animation: bokehfloat ease-in-out infinite;
+  filter: blur(3px);
+}
+@keyframes bokehfloat { 0%,100%{transform:translateY(0) scale(1);opacity:var(--op)} 50%{transform:translateY(-30px) scale(1.1);opacity:calc(var(--op) * 1.3)} }
+
+.finale-content { position: relative; z-index: 2; }
+.finale-ornament { font-size: 2rem; color: var(--wine); opacity: 0; margin-bottom: 1.5rem; }
+.finale-line1 { font-family: 'Dancing Script', cursive; font-size: clamp(1.5rem, 5vw, 3rem); color: var(--cream-dark); opacity: 0; line-height: 1.3; }
+.finale-line2 { font-family: 'Dancing Script', cursive; font-size: clamp(2rem, 7vw, 4.5rem); background: linear-gradient(135deg, var(--gold-light), var(--cream), var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; opacity: 0; line-height: 1.2; margin-top: 0.5rem; }
+.finale-heart { font-size: 1.2rem; color: var(--wine); opacity: 0; margin: 1rem 0; animation: heartbeat 1.5s ease-in-out infinite; }
+@keyframes heartbeat { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
+
+.replay-btn {
+  margin-top: 2.5rem; opacity: 0;
+  font-family: 'Caveat', cursive; font-size: 1rem; letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--cream); background: none; border: 1px solid rgba(184,151,90,0.4);
+  padding: 14px 40px; cursor: none; transition: all 0.4s; position: relative;
+}
+.replay-btn:hover { border-color: var(--gold); color: var(--gold-light); }
+
+/* confetti */
+#confetti-canvas { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+
+/* ─── FLOATING ELEMENTS ─── */
+.float-up { animation: floatup 3s ease-in-out infinite alternate; }
+@keyframes floatup { 0%{transform:translateY(0)} 100%{transform:translateY(-12px)} }
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--dark-brown); }
+::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
+
+/* ─── MOBILE ─── */
+@media(max-width: 600px) {
+  .scrapbook-grid { grid-template-columns: 1fr; gap: 3rem; }
+  .oval-frame { width: 180px; height: 220px; }
+  .note-paper { padding: 2.2rem 1.5rem 2rem; }
+  body { cursor: auto; }
+  #cursor, #cursor-dot, #cursor-glow { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-dot"></div>
+<div id="cursor-glow"></div>
+<div id="grain"></div>
+
+<!-- MUSIC -->
+<audio id="bg-music" loop preload="auto">
+<source src="foto/kanyaah.mpeg" type="audio/mpeg">
+</audio>
+<button id="music-btn" title="Music">
+  <div class="wave"><span></span><span></span><span></span><span></span></div>
+</button>
+
+<!-- LOADING -->
+<div id="loading">
+  <div class="loading-logo">A Cinematic Memory</div>
+  <div class="loading-line" id="loading-line"></div>
+  <div class="loading-text">Developing your memories...</div>
+</div>
+
+<!-- ════════════════════════════════ SECTION 1: HERO ════════════════════════════════ -->
+<section id="hero">
+  <div class="hero-vignette"></div>
+  <div class="hero-light-leak"></div>
+  <div class="hero-light-leak2"></div>
+
+  <div class="birds-container" id="birds"></div>
+  <div class="petals-container" id="petals"></div>
+  <div class="sparkles-container" id="sparkles"></div>
+
+  <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;">
+    <div class="hero-eyebrow" id="heroEyebrow">✦ a birthday memory ✦</div>
+    <h1 class="hero-title" id="heroTitle">Happy Birthday</h1>
+    <div class="hero-divider" id="heroDivider">
+      <div class="hero-divider-line"></div>
+      <div class="hero-divider-ornament">❧</div>
+      <div class="hero-divider-line right"></div>
+    </div>
+    <p class="hero-subtitle" id="heroSubtitle">
+      Wishing you endless happiness, success, and beautiful moments ahead
+    </p>
+    <button class="hero-cta" id="heroCta" onclick="scrollToScrapbook()">
+      Open Memories ↓
+    </button>
+  </div>
+  <div class="hero-date" id="heroDate">— crafted with love —</div>
+</section>
+
+<!-- ════════════════════════════════ SECTION 2: SCRAPBOOK ════════════════════════════════ -->
+<section id="scrapbook">
+  <div class="section-header" id="scrapHeader">
+    <div class="section-eyebrow">✦ our moments ✦</div>
+    <div class="section-ornament">❧</div>
+    <h2 class="section-title">Memory Fragments</h2>
+  </div>
+
+  <div class="scrapbook-grid">
+
+    <!-- Polaroid -->
+    <div class="photo-polaroid" id="photo1">
+      <div class="photo-tape"></div>
+      <div class="photo-inner">
+        <div class="photo-inner">
+        <img src="foto/foto1.jpeg" style="width:100%;height:100%;object-fit:cover;display:block;">
+      </div>
+      </div>
+      <div class="photo-caption"> Prettyyy aku sukak ✦</div>
+    </div>
+
+    <!-- Oval -->
+    <div class="photo-oval" id="photo2" style="justify-self:center">
+      <div class="charm"></div>
+      <div class="oval-frame">
+        <div class="oval-frame">
+        <img src="foto/foto2.jpeg" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:50%;">
+      </div>
+      </div>
+      <div class="wax-seal">❧</div>
+    </div>
+
+    <!-- Clip -->
+    <div class="photo-clip" id="photo3">
+      <div class="paper-clip"></div>
+      <div class="stitched-border"></div>
+    <div class="photo-inner">
+        <img src="foto/foto3.jpeg" style="width:100%;height:100%;object-fit:cover;display:block;">
+      </div>
+    </div>
+      <div style="padding:8px 4px 2px;font-family:'Caveat',cursive;font-size:0.9rem;color:var(--ink);opacity:0.7">
+        "These memories are forever ♡"
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════════════════════════ SECTION 3: LOVE NOTE ════════════════════════════════ -->
+<section id="lovenote">
+  <div class="denim-bg"></div>
+  <div class="denim-threads"></div>
+  <div class="light-leak-note"></div>
+
+  <div class="section-header" id="noteHeader" style="margin-bottom:2rem">
+    <div class="section-eyebrow">✦ from the heart ✦</div>
+    <h2 class="section-title" style="color:var(--cream)">A Little Note</h2>
+  </div>
+
+  <div class="note-wrapper" id="noteWrapper">
+    <!-- Gold clip at top -->
+    <svg class="note-clip-svg note-clip-top" width="60" height="60" viewBox="0 0 60 60">
+      <rect x="20" y="5" width="20" height="36" rx="10" fill="none" stroke="#d4af6e" stroke-width="3"/>
+      <rect x="26" y="11" width="8" height="24" rx="4" fill="none" stroke="#d4af6e" stroke-width="2"/>
+    </svg>
+
+    <div class="note-paper">
+      <div class="rip-top"></div>
+      <div class="note-ruling"></div>
+      <div class="note-margin-line"></div>
+
+      <div class="note-heading">To My Dearest,</div>
+      <div class="note-body" id="typewriter-text"><span id="typewriter-cursor"></span></div>
+      <div class="note-signature">— with all my love ♡</div>
+
+      <div class="note-wax-seal">✦</div>
+      <div class="rip-bottom"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ SECTION 4: VIDEO ════════════════════════════════ -->
+<section id="memvideo">
+  <div class="section-header" id="videoHeader">
+    <div class="section-eyebrow">✦ play & remember ✦</div>
+    <h2 class="section-title">Our Film</h2>
+  </div>
+
+  <div class="tv-wrapper" id="tvWrapper">
+    <div class="tv-glow"></div>
+    <div class="tv-outer">
+      <div class="tv-screen" id="tvScreen">
+        <div class="vhs-placeholder" id="vhsPlaceholder">
+          <div class="vhs-logo">▶ VHS</div>
+          <div class="vhs-text">press play to begin</div>
+        </div>
+<video class="vhs-video" id="mainVideo" preload="metadata" style="display:block;">
+  <source src="foto/vidio.mp4" type="video/mp4">
+</video>        <div class="scanlines"></div>
+        <div class="vhs-noise"></div>
+        <div class="static-line"></div>
+        <div class="play-btn-wrap" id="playBtnWrap" onclick="toggleVideo()">
+          <div class="play-btn" id="playBtn">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <polygon points="8,4 24,14 8,24" fill="rgba(240,230,211,0.9)"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="vhs-controls">
+        <span class="vhs-label">REC</span>
+        <div class="vhs-progress" id="vhsProgress">
+          <div class="vhs-progress-fill" id="vhsFill"></div>
+        </div>
+        <span class="vhs-time" id="vhsTime">0:00 / 0:00</span>
+      </div>
+    </div>
+    <div class="tv-brand">✦ MEMORY FILMS ✦</div>
+  </div>
+
+  <div class="video-note" id="videoNote">
+    <p>Upload your video to make this moment complete ♡</p>
+    <p style="margin-top:6px;font-size:0.85rem">Drop an .mp4 file anywhere on this player</p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════ SECTION 5: FINALE ════════════════════════════════ -->
+<section id="finale">
+  <div class="bokeh-container" id="bokehContainer"></div>
+  <canvas id="confetti-canvas"></canvas>
+
+  <div class="finale-content">
+    <div class="finale-ornament" id="finOrnament">✦ ✦ ✦</div>
+    <div class="finale-line1" id="finLine1">"Thank you for being part of my story"</div>
+    <div class="finale-heart" id="finHeart">♡</div>
+    <div class="finale-line2" id="finLine2">See you in more beautiful memories</div>
+    <button class="replay-btn" id="replayBtn" onclick="replayAll()">↺ Replay Memories</button>
+  </div>
+</section>
+
+<script>
+// ─── CURSOR ───
+const cursor = document.getElementById('cursor');
+const cursorDot = document.getElementById('cursor-dot');
+const cursorGlow = document.getElementById('cursor-glow');
+let mx = 0, my = 0, cx = 0, cy = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cursorDot.style.left = mx + 'px'; cursorDot.style.top = my + 'px'; cursorGlow.style.left = mx + 'px'; cursorGlow.style.top = my + 'px'; });
+(function animCursor() { cx += (mx - cx) * 0.12; cy += (my - cy) * 0.12; cursor.style.left = cx + 'px'; cursor.style.top = cy + 'px'; requestAnimationFrame(animCursor); })();
+document.querySelectorAll('button,a').forEach(el => { el.addEventListener('mouseenter', () => cursor.style.transform = 'translate(-50%,-50%) scale(2)'); el.addEventListener('mouseleave', () => cursor.style.transform = 'translate(-50%,-50%) scale(1)'); });
+
+// ─── GSAP SETUP ───
+gsap.registerPlugin(ScrollTrigger, TextPlugin);
+
+// ─── LOADING ───
+window.addEventListener('load', () => {
+  const line = document.getElementById('loading-line');
+  setTimeout(() => { line.classList.add('active'); }, 100);
+  setTimeout(() => {
+    gsap.to('#loading', { opacity: 0, duration: 1.2, ease: 'power2.inOut', onComplete: () => {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('music-btn').style.opacity = '1';
+      heroEntrance();
+      createFloating();
+      createBokeh();
+    }});
+  }, 2600);
+});
+
+// ─── MUSIC ───
+const music = document.getElementById('bg-music');
+const musicBtn = document.getElementById('music-btn');
+let musicStarted = false;
+function startMusic() {
+  if (!musicStarted) { music.volume = 0.18; music.play().catch(()=>{}); musicStarted = true; }
+}
+musicBtn.addEventListener('click', () => {
+  startMusic();
+  if (music.paused) { music.play(); musicBtn.classList.remove('muted'); }
+  else { music.pause(); musicBtn.classList.add('muted'); }
+});
+// autoplay on interaction
+document.addEventListener('click', startMusic, { once: true });
+document.addEventListener('touchstart', startMusic, { once: true });
+
+// ─── HERO ENTRANCE ───
+function heroEntrance() {
+  // Set semua elemen ke invisible dulu sebelum animasi
+  gsap.set('#heroEyebrow', { opacity: 0, y: 20 });
+  gsap.set('#heroTitle',   { opacity: 0, y: 40 });
+  gsap.set('#heroDivider', { opacity: 0, scaleX: 0 });
+  gsap.set('#heroSubtitle',{ opacity: 0, y: 16 });
+  gsap.set('#heroCta',     { opacity: 0, y: 12 });
+  gsap.set('#heroDate',    { opacity: 0 });
+
+  const tl = gsap.timeline();
+  tl.to('#heroEyebrow',  { opacity: 1, y: 0,      duration: 1,   ease: 'power3.out' }, 0.3)
+    .to('#heroTitle',    { opacity: 1, y: 0,      duration: 1.4, ease: 'power3.out' }, 0.7)
+    .to('#heroDivider',  { opacity: 1, scaleX: 1, duration: 0.8, ease: 'power2.out' }, 1.5)
+    .to('#heroSubtitle', { opacity: 1, y: 0,      duration: 0.9, ease: 'power2.out' }, 1.8)
+    .to('#heroCta',      { opacity: 1, y: 0,      duration: 0.8, ease: 'power2.out' }, 2.3)
+    .to('#heroDate',     { opacity: 1,            duration: 1,   ease: 'power2.out' }, 2.8);
+}
+
+// ─── FLOATING ELEMENTS ───
+function createFloating() {
+  createBirds();
+  createPetals();
+  createSparkles();
+}
+
+function createBirds() {
+  const container = document.getElementById('birds');
+  for (let i = 0; i < 5; i++) {
+    const bird = document.createElement('div');
+    bird.className = 'bird';
+    bird.innerHTML = `<svg viewBox="0 0 40 20" xmlns="http://www.w3.org/2000/svg"><path d="M0,10 Q10,2 20,10 Q30,2 40,10" /></svg>`;
+    bird.style.cssText = `top:${15 + Math.random()*50}%; left:-60px;`;
+    container.appendChild(bird);
+    const delay = i * 3.5 + Math.random() * 4;
+    const dur = 14 + Math.random() * 8;
+    const y = (Math.random() - 0.5) * 120;
+    gsap.timeline({ repeat: -1, delay })
+      .to(bird, { opacity: 0.7, duration: 1 })
+      .to(bird, { x: window.innerWidth + 100, y, duration: dur, ease: 'none',
+        onUpdate: function() { const wing = Math.sin(Date.now() * 0.005) * 3; bird.querySelector('path').setAttribute('d', `M0,10 Q10,${2+wing} 20,10 Q30,${2-wing} 40,10`); }
+      })
+      .to(bird, { opacity: 0, duration: 1 }, `-=1`)
+      .set(bird, { x: 0, y: 0 });
+  }
+}
+
+function createPetals() {
+  const container = document.getElementById('petals');
+  const emojis = ['✿', '❀', '✾', '❁', '🌸'];
+  for (let i = 0; i < 12; i++) {
+    const p = document.createElement('div');
+    p.className = 'petal';
+    p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    p.style.cssText = `left:${Math.random()*100}%;font-size:${10+Math.random()*12}px;animation-duration:${8+Math.random()*8}s;animation-delay:${Math.random()*10}s;`;
+    container.appendChild(p);
+  }
+}
+
+function createSparkles() {
+  const container = document.getElementById('sparkles');
+  for (let i = 0; i < 30; i++) {
+    const s = document.createElement('div');
+    s.className = 'sparkle';
+    const size = 2 + Math.random() * 4;
+    s.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-duration:${2+Math.random()*4}s;animation-delay:${Math.random()*5}s;`;
+    container.appendChild(s);
+  }
+}
+
+// ─── BOKEH ───
+function createBokeh() {
+  const container = document.getElementById('bokehContainer');
+  const colors = ['rgba(107,31,46,', 'rgba(184,151,90,', 'rgba(44,62,92,', 'rgba(240,230,211,'];
+  for (let i = 0; i < 25; i++) {
+    const b = document.createElement('div');
+    b.className = 'bokeh';
+    const size = 20 + Math.random() * 80;
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const op = 0.05 + Math.random() * 0.12;
+    b.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;background:${color}${op});--op:${op};animation-duration:${4+Math.random()*8}s;animation-delay:${Math.random()*6}s;`;
+    container.appendChild(b);
+  }
+}
+
+// ─── SCROLL ───
+function scrollToScrapbook() {
+  gsap.to(window, { duration: 2, scrollTo: '#scrapbook', ease: 'power4.inOut' });
+}
+
+// Smooth scroll helper
+if (typeof gsap !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
+
+// ─── SECTION 2: SCRAPBOOK ───
+ScrollTrigger.batch(['#scrapHeader'], {
+  onEnter: els => gsap.from(els, { opacity: 0, y: 40, duration: 1.2, ease: 'power3.out', stagger: 0.15 }),
+  once: true
+});
+ScrollTrigger.batch(['#photo1'], {
+  onEnter: () => gsap.to('#photo1', { opacity: 1, duration: 0.01 }) && gsap.from('#photo1', { opacity: 0, y: 60, rotation: -6, duration: 1.4, ease: 'power3.out', delay: 0 }),
+  once: true
+});
+[['#photo1', 0, -3], ['#photo2', 0.2, 2.5], ['#photo3', 0.4, 1.5]].forEach(([id, delay, rot]) => {
+  ScrollTrigger.create({
+    trigger: id, start: 'top 80%',
+    onEnter: () => { gsap.fromTo(id, { opacity: 0, y: 70, rotation: rot + 5 }, { opacity: 1, y: 0, rotation: rot, duration: 1.4, ease: 'power3.out', delay }); },
+    once: true
+  });
+});
+
+// Photo parallax
+ScrollTrigger.create({
+  trigger: '#scrapbook', start: 'top bottom', end: 'bottom top', scrub: 1,
+  onUpdate: self => {
+    const p = self.progress;
+    gsap.set('#photo1', { y: p * -30 });
+    gsap.set('#photo2', { y: p * 20 });
+    gsap.set('#photo3', { y: p * -15 });
+  }
+});
+
+// ─── SECTION 3: TYPEWRITER ───
+const noteText = `Happy birthday to youuu~ Today is a day that the universe chose to bring you into this world, and for that, I am endlessly grateful.
+
+You have this rare gift of turning ordinary moments into something extraordinary. Every laugh we've shared, every quiet afternoon, every little adventure — they've all become some of my most treasured memories.
+
+I hope this year brings you everything your heart has been quietly wishing for. More joy, more peace, more of the beautiful moments that make life feel like poetry.
+
+You deserve every wonderful thing that comes your way. Never stop dreaming, never stop blooming.
+
+With all the love I have,`;
+
+let typewriterDone = false;
+ScrollTrigger.create({
+  trigger: '#lovenote', start: 'top 60%',
+  onEnter: () => {
+    gsap.to('#noteHeader', { opacity: 1, y: 0, duration: 0.8 });
+    gsap.to('#noteWrapper', { opacity: 1, duration: 0.8, delay: 0.3 });
+    if (!typewriterDone) { typewriterDone = true; setTimeout(startTypewriter, 800); }
+  }, once: true
+});
+
+function startTypewriter() {
+  const el = document.getElementById('typewriter-text');
+  const cursor = document.getElementById('typewriter-cursor');
+  el.innerHTML = '';
+  el.appendChild(cursor);
+  let i = 0;
+  const speed = 28;
+  function type() {
+    if (i < noteText.length) {
+      const ch = noteText[i];
+      if (ch === '\n') { el.insertBefore(document.createElement('br'), cursor); el.insertBefore(document.createElement('br'), cursor); }
+      else { el.insertBefore(document.createTextNode(ch), cursor); }
+      i++; setTimeout(type, ch === '.' || ch === ',' ? speed * 6 : ch === '\n' ? speed * 8 : speed);
+    }
+  }
+  type();
+}
+
+// ─── SECTION 4: VIDEO ───
+ScrollTrigger.create({
+  trigger: '#memvideo', start: 'top 70%',
+  onEnter: () => {
+    gsap.to('#videoHeader', { opacity: 1, y: 0, duration: 0.8 });
+    gsap.to('#tvWrapper', { opacity: 1, y: 0, duration: 1, ease: 'power3.out', delay: 0.2 });
+    gsap.to('#videoNote', { opacity: 1, duration: 0.8, delay: 0.8 });
+  }, once: true
+});
+
+const video = document.getElementById('mainVideo');
+const playBtnWrap = document.getElementById('playBtnWrap');
+const playBtn = document.getElementById('playBtn');
+const vhsFill = document.getElementById('vhsFill');
+const vhsTime = document.getElementById('vhsTime');
+const vhsPlaceholder = document.getElementById('vhsPlaceholder');
+let videoPlaying = false;
+
+function toggleVideo() {
+  if (!video.src || video.src === window.location.href) {
+    // demo mode: animate fake progress
+    if (!videoPlaying) {
+      videoPlaying = true;
+      playBtn.querySelector('polygon').setAttribute('points', '6,4 10,4 10,24 6,24 M14,4 18,4 18,24 14,24');
+      playBtn.innerHTML = '<rect x="6" y="4" width="4" height="20" fill="rgba(240,230,211,0.9)"/><rect x="14" y="4" width="4" height="20" fill="rgba(240,230,211,0.9)"/>';
+      vhsPlaceholder.style.display = 'none';
+      let prog = 0;
+      const demo = setInterval(() => {
+        prog += 0.3; if (prog > 100) { clearInterval(demo); videoPlaying = false; prog = 0; resetPlayBtn(); }
+        vhsFill.style.width = prog + '%';
+        const total = 210; const cur = Math.round(total * prog / 100);
+        vhsTime.textContent = fmtTime(cur) + ' / ' + fmtTime(total);
+      }, 100);
+    }
+  } else {
+    if (video.paused) {
+      video.play(); videoPlaying = true;
+      playBtn.innerHTML = '<rect x="6" y="4" width="4" height="20" fill="rgba(240,230,211,0.9)"/><rect x="14" y="4" width="4" height="20" fill="rgba(240,230,211,0.9)"/>';
+    } else {
+      video.pause(); videoPlaying = false; resetPlayBtn();
+    }
+  }
+}
+function resetPlayBtn() {
+  playBtn.innerHTML = '<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><polygon points="8,4 24,14 8,24" fill="rgba(240,230,211,0.9)"/></svg>';
+}
+function fmtTime(s) { return Math.floor(s/60) + ':' + ('0'+Math.floor(s%60)).slice(-2); }
+video.addEventListener('timeupdate', () => {
+  if (video.duration) {
+    vhsFill.style.width = (video.currentTime / video.duration * 100) + '%';
+    vhsTime.textContent = fmtTime(video.currentTime) + ' / ' + fmtTime(video.duration);
+  }
+});
+
+// Drag & drop video
+const tvScreen = document.getElementById('tvScreen');
+tvScreen.addEventListener('dragover', e => { e.preventDefault(); tvScreen.style.outline = '2px solid rgba(184,151,90,0.5)'; });
+tvScreen.addEventListener('dragleave', () => { tvScreen.style.outline = ''; });
+tvScreen.addEventListener('drop', e => {
+  e.preventDefault(); tvScreen.style.outline = '';
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('video/')) {
+    const url = URL.createObjectURL(file);
+    video.src = url; video.style.display = 'block';
+    vhsPlaceholder.style.display = 'none';
+    document.getElementById('videoNote').style.display = 'none';
+    playBtn.innerHTML = '<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><polygon points="8,4 24,14 8,24" fill="rgba(240,230,211,0.9)"/></svg>';
+  }
+});
+
+// ─── SECTION 5: FINALE ───
+ScrollTrigger.create({
+  trigger: '#finale', start: 'top 60%',
+  onEnter: () => {
+    const tl = gsap.timeline();
+    tl.to('#finOrnament', { opacity: 1, y: 0, duration: 1, from: { y: 20 } }, 0)
+      .from('#finOrnament', { y: 20, duration: 1 }, 0)
+      .from('#finLine1', { opacity: 0, y: 30, duration: 1.2, ease: 'power3.out' }, 0.6)
+      .to('#finLine1', { opacity: 1, duration: 0 }, 0.6)
+      .to('#finHeart', { opacity: 1, duration: 0.6 }, 1.4)
+      .from('#finLine2', { opacity: 0, y: 20, duration: 1.2, ease: 'power3.out' }, 1.6)
+      .to('#finLine2', { opacity: 1, duration: 0 }, 1.6)
+      .from('#replayBtn', { opacity: 0, y: 10, duration: 0.8 }, 2.4)
+      .to('#replayBtn', { opacity: 1, duration: 0 }, 2.4);
+    setTimeout(launchConfetti, 1000);
+  }, once: true
+});
+
+// ─── CONFETTI ───
+function launchConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight;
+  const particles = [];
+  const colors = ['#d4af6e','#8b2635','#3d5278','#f0e6d3','#c0b090','#6b1f2e'];
+  for (let i = 0; i < 80; i++) {
+    particles.push({
+      x: Math.random() * canvas.width, y: -10,
+      w: 4 + Math.random() * 6, h: 4 + Math.random() * 4,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      vx: (Math.random() - 0.5) * 1.5, vy: 0.5 + Math.random() * 1.5,
+      rot: Math.random() * 360, rotV: (Math.random() - 0.5) * 3,
+      alpha: 1
+    });
+  }
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let alive = false;
+    particles.forEach(p => {
+      if (p.alpha <= 0) return;
+      alive = true;
+      p.x += p.vx; p.y += p.vy; p.rot += p.rotV;
+      if (p.y > canvas.height * 0.6) p.alpha -= 0.008;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot * Math.PI / 180);
+      ctx.globalAlpha = p.alpha; ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h); ctx.restore();
+    });
+    if (alive) requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// ─── REPLAY ───
+function replayAll() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  setTimeout(() => { typewriterDone = false; }, 1500);
+}
+
+// ─── MOUSE TILT on scrapbook items ───
+document.querySelectorAll('.photo-polaroid, .photo-oval, .photo-clip').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const r = card.getBoundingClientRect();
+    const x = (e.clientX - r.left - r.width/2) / (r.width/2);
+    const y = (e.clientY - r.top - r.height/2) / (r.height/2);
+    gsap.to(card, { rotateY: x * 8, rotateX: -y * 8, duration: 0.4, ease: 'power1.out', transformPerspective: 600 });
+  });
+  card.addEventListener('mouseleave', e => {
+    gsap.to(card, { rotateY: 0, rotateX: 0, duration: 0.6, ease: 'power2.out' });
+  });
+});
+
+// ─── PARALLAX HERO on mouse ───
+document.addEventListener('mousemove', e => {
+  const xr = (e.clientX / window.innerWidth - 0.5) * 20;
+  const yr = (e.clientY / window.innerHeight - 0.5) * 10;
+  gsap.to('.hero-light-leak', { x: xr * 2, y: yr * 2, duration: 1.5, ease: 'power1.out' });
+  gsap.to('#heroTitle', { x: xr * 0.5, y: yr * 0.3, duration: 1.5, ease: 'power1.out' });
+});
+
+// ─── RESIZE ───
+window.addEventListener('resize', () => {
+  const canvas = document.getElementById('confetti-canvas');
+  if (canvas) { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
+});
+</script>
+</body>
+</html>
