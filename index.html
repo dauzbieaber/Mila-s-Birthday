@@ -728,9 +728,14 @@ section { position: relative; overflow: hidden; }
           <div class="vhs-logo">▶ VHS</div>
           <div class="vhs-text">press play to begin</div>
         </div>
-<video class="vhs-video" id="mainVideo" preload="metadata" controls playsinline style="display:block;">
-    <source src="videoo.mp4" type="video/mp4">
-</video>       
+<iframe
+  id="mainVideo"
+  class="vhs-video"
+  src="https://drive.google.com/file/d/1PRBS6az_l-9huDsUkaf_kyZFfKJwQuK3/preview"
+  allow="autoplay"
+  allowfullscreen
+  style="display:block; border:none; width:100%; height:100%;">
+</iframe>
         <div class="scanlines"></div>
         <div class="vhs-noise"></div>
         <div class="static-line"></div>
